@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<tictactoe>
+	<function>
+		<name>conv2x3x3_64_2x2</name>
+		<parameter_types>[tensor2x3x3, tensor64x2x2x2, vector64]</parameter_types>
+		<return_type>tensor64x2x2</return_type>
+	</function>
+	<function>
+		<name>maxpool64x2x2</name>
+		<parameter_types>[tensor64x2x2]</parameter_types>
+		<return_type>vector64</return_type>
+	</function>
+	<function>
+		<name>relu64x2x2</name>
+		<parameter_types>[tensor64x2x2]</parameter_types>
+		<return_type>tensor64x2x2</return_type>
+	</function>
+	<function>
+		<name>linear64_8</name>
+		<parameter_types>[vector64, tensor8x64, vector8]</parameter_types>
+		<return_type>vector8</return_type>
+	</function>
+	<function>
+		<name>linear8_1</name>
+		<parameter_types>[vector8, vector8, float]</parameter_types>
+		<return_type>float</return_type>
+	</function>
+	<function>
+		<name>relu8</name>
+		<parameter_types>[vector8]</parameter_types>
+		<return_type>vector8</return_type>
+	</function>
+	<function>
+		<name>tunnel8x64</name>
+		<parameter_types>[tensor8x64]</parameter_types>
+		<return_type>tensor8x64</return_type>
+	</function>
+	<function>
+		<name>tunnel2x3x3</name>
+		<parameter_types>[tensor2x3x3]</parameter_types>
+		<return_type>tensor2x3x3</return_type>
+	</function>
+	<function>
+		<name>tunnel64x2x2x2</name>
+		<parameter_types>[tensor64x2x2x2]</parameter_types>
+		<return_type>tensor64x2x2x2</return_type>
+	</function>
+</tictactoe>
