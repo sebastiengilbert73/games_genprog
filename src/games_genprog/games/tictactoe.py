@@ -8,6 +8,8 @@ import numpy as np
 import base64
 import games_genprog.utilities
 import torch
+import sys
+import copy
 
 possibleTypes = ['float', 'vector18', 'tensor2x3x3', 'tensor64x2x2', 'vector64', 'tensor64x2x2x2',
                  'tensor8x64', 'vector8']
@@ -199,8 +201,8 @@ class Population(gpevo.Population):
             for player2Ndx in range(player1Ndx, len(self._individualsList)):
                 player1 = self._individualsList[player1Ndx]
                 player2 = self._individualsList[player2Ndx]
-                winner_1_vs_2 = self.WinnerOf(player1, player2)
-                winner_2_vs_1 = self.WinnerOf(player2, player1)
+                winner_1_vs_2 = self.WinnerOf(player1, player2, interpreter)
+                winner_2_vs_1 = self.WinnerOf(player2, player1, interpreter)
                 if winner_1_vs_2 == player1:
                     individual_to_sum[player1] += 1
                     individual_to_sum[player2] -= 1
@@ -217,5 +219,136 @@ class Population(gpevo.Population):
                                  for individual in self._individualsList}
         return individual_to_average
 
-    def WinnerOf(self, player1, player2):
-        return random.choice([player1, player2])
+    def WinnerOf(self, player1, player2, interpreter):
+        positions_list, winner = self.Game(player1, player2, interpreter)
+        return winner
+
+    def Game(self, player1, player2, interpreter):
+        positions_list = []
+        position = np.zeros((2, 3, 3), dtype=float)
+        winner = None
+        current_player = player1
+        while winner is None:
+            if current_player == player2:
+                position = self.SwapPositions(position)
+            print ("tictactoe.Population.Game(): position = {}".format(position))
+            position, winner = self.ChooseNextPosition(current_player, position, interpreter)
+
+            if current_player == player2:
+                position = self.SwapPositions(position)
+                if winner == 'player1':  # The current player won with this move. It must be swapped.
+                    winner = player2
+                elif winner == 'player2':
+                    winner = player1
+            else:
+                if winner == 'player1':
+                    winner = player1
+                elif winner == 'player2':
+                    winner = player2
+
+            if current_player == player1:
+                current_player = player2
+            else:
+                current_player = player1
+            positions_list.append(position)
+        return positions_list, winner
+
+    def ChooseNextPosition(self, player, position, interpreter):
+        legalPositionsWinner_afterMove = self.LegalPositionsAndWinnerAfterMove(position)
+        candidatePositionEvaluation_list = []
+        for candidate_position, winner in legalPositionsWinner_afterMove:
+            evaluation = None
+            if winner == 'player1':
+                evaluation = sys.float_info.max
+            elif winner == 'player2':  # The other player wins: avoid that if possible
+                evaluation = -sys.float_info.max
+            else:
+                evaluation = interpreter.Evaluate(player, {'position': 'tensor2x3x3'},
+                                                  {'position': position}, 'float')
+            candidatePositionEvaluation_list.append((candidate_position, evaluation))
+        highest_evaluation = -sys.float_info.max
+        best_positions = []
+        for candidate_position, evaluation in candidatePositionEvaluation_list:
+            if evaluation > highest_evaluation:
+                highest_evaluation = evaluation
+                best_positions = [candidate_position]
+            elif evaluation == highest_evaluation:
+                best_positions.append(candidate_position)
+        if len(best_positions) == 0:
+            raise ValueError("tictactoe.Population.ChooseNextPosition(): best_positions is empty...?!")
+        position = random.choice(best_positions)
+        corresponding_winner = None
+        for candidate_position, candidate_winner in legalPositionsWinner_afterMove:
+            if np.array_equal(candidate_position, position):
+                corresponding_winner = candidate_winner
+        return position, corresponding_winner
+
+    def SwapPositions(self, position):
+        return position[[1, 0], :, :]
+
+    def LegalPositionsAndWinnerAfterMove(self, position):
+        legalPositionWinner_list = []
+        for row in range(3):
+            for col in range(3):
+                if position[0, row, col] == 0 and position[1, row, col] == 0:
+                    candidate_position = copy.deepcopy(position)
+                    candidate_position[0, row, col] = 1
+                    winner = self.PositionWinner(candidate_position)
+                    legalPositionWinner_list.append((candidate_position, winner))
+        return legalPositionWinner_list
+
+    def PositionWinner(self, position):
+        # Full row
+        for row in range(3):
+            number_of_Xs = 0
+            number_of_Os = 0
+            for col in range(3):
+                if position[0, row, col] == 1:
+                    number_of_Xs += 1
+                elif position[1, row, col] == 1:
+                    number_of_Os += 1
+            if number_of_Xs == 3:
+                return 'player1'
+            elif number_of_Os == 3:
+                return 'player2'
+        # Full column
+        for col in range(3):
+            number_of_Xs = 0
+            number_of_Os = 0
+            for row in range(3):
+                if position[0, row, col] == 1:
+                    number_of_Xs += 1
+                elif position[1, row, col] == 1:
+                    number_of_Os += 1
+            if number_of_Xs == 3:
+                return 'player1'
+            elif number_of_Os == 3:
+                return 'player2'
+        # Diagonals
+        number_of_Xs = 0
+        number_of_Os = 0
+        for i in range(3):
+            if position[0, i, i] == 1:
+                number_of_Xs += 1
+            elif position[1, i, i] == 1:
+                number_of_Os += 1
+        if number_of_Xs == 3:
+            return 'player1'
+        elif number_of_Os == 3:
+            return 'player2'
+
+        number_of_Xs = 0
+        number_of_Os = 0
+        for i in range(3):
+            if position[0, 2 - i, i] == 1:
+                number_of_Xs += 1
+            elif position[1, 2 - i, i] == 1:
+                number_of_Os += 1
+        if number_of_Xs == 3:
+            return 'player1'
+        elif number_of_Os == 3:
+            return 'player2'
+
+        if np.count_nonzero(position) == 9:
+            return 'draw'
+        return None
