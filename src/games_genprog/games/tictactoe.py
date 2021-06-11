@@ -10,6 +10,7 @@ import games_genprog.utilities
 import torch
 import sys
 import copy
+import games_genprog.gamesgp as gamesgp
 
 possibleTypes = ['float', 'vector18', 'tensor2x3x3', 'tensor64x2x2', 'vector64', 'tensor64x2x2x2',
                  'tensor8x64', 'vector8']
@@ -186,11 +187,11 @@ class Interpreter(gp.Interpreter):
     def PossibleTypes(self):
         return possibleTypes
 
-class Population(gpevo.Population):
+class Population(gamesgp.PlayersPopulation):
     def __init__(self):
         super().__init__()
 
-    def EvaluateIndividualCosts(self,
+    """def EvaluateIndividualCosts(self,
                                 inputOutputTuplesList: List[ Tuple[ Dict[str, Any], Any ] ],
                                 variableNameToTypeDict: Dict[str, str],
                                 interpreter: gp.Interpreter,
@@ -203,24 +204,29 @@ class Population(gpevo.Population):
                 player2 = self._individualsList[player2Ndx]
                 winner_1_vs_2 = self.WinnerOf(player1, player2, interpreter)
                 winner_2_vs_1 = self.WinnerOf(player2, player1, interpreter)
-                if winner_1_vs_2 == player1:
+                if winner_1_vs_2 == 'player1':
                     individual_to_sum[player1] += 1
                     individual_to_sum[player2] -= 1
-                elif winner_1_vs_2 == player2:
+                elif winner_1_vs_2 == 'player2':
                     individual_to_sum[player2] += 1
                     individual_to_sum[player1] -= 1
-                if winner_2_vs_1 == player1:
+                if winner_2_vs_1 == 'player1':
                     individual_to_sum[player1] += 1
                     individual_to_sum[player2] -= 1
-                elif winner_2_vs_1 == player2:
+                elif winner_2_vs_1 == 'player2':
                     individual_to_sum[player2] += 1
                     individual_to_sum[player1] -= 1
         individual_to_average = {individual: individual_to_sum[individual] / (2 * (len(self._individualsList) - 1))
                                  for individual in self._individualsList}
         return individual_to_average
+    """
 
-    def WinnerOf(self, player1, player2, interpreter):
+    """def WinnerOf(self, player1, player2, interpreter):
         positions_list, winner = self.Game(player1, player2, interpreter)
+        if winner == 'player1':
+            return player1
+        elif winner == 'player2':
+            return player2
         return winner
 
     def Game(self, player1, player2, interpreter):
@@ -236,15 +242,11 @@ class Population(gpevo.Population):
 
             if current_player == player2:
                 position = self.SwapPositions(position)
-                if winner == 'player1':  # The current player won with this move. It must be swapped.
-                    winner = player2
-                elif winner == 'player2':
-                    winner = player1
-            else:
-                if winner == 'player1':
-                    winner = player1
-                elif winner == 'player2':
-                    winner = player2
+                if winner is not None and winner != 'draw':
+                    if winner == 'player1':  # The current player won with this move. It must be swapped.
+                        winner = 'player2'
+                    else: # The current player lost with this move. It must me swapped.
+                        winner = 'player1'
 
             if current_player == player1:
                 current_player = player2
@@ -252,8 +254,9 @@ class Population(gpevo.Population):
                 current_player = player1
             positions_list.append(position)
         return positions_list, winner
+    """
 
-    def ChooseNextPosition(self, player, position, interpreter):
+    """def ChooseNextPosition(self, player, position, interpreter):
         legalPositionsWinner_afterMove = self.LegalPositionsAndWinnerAfterMove(position)
         candidatePositionEvaluation_list = []
         for candidate_position, winner in legalPositionsWinner_afterMove:
@@ -284,6 +287,16 @@ class Population(gpevo.Population):
         return position, corresponding_winner
 
     def SwapPositions(self, position):
+        return position[[1, 0], :, :]
+    """
+
+    def PositionShape(self):
+        return (2, 3, 3)
+
+    def StartingPosition(self):
+        return np.zeros(self.PositionShape(), dtype=float)
+
+    def SwapPosition(self, position):
         return position[[1, 0], :, :]
 
     def LegalPositionsAndWinnerAfterMove(self, position):
@@ -352,3 +365,22 @@ class Population(gpevo.Population):
         if np.count_nonzero(position) == 9:
             return 'draw'
         return None
+
+def Display(position):
+        if position.shape != (2, 3, 3):
+            raise ValueError("tictactoe.Display(): The shape of position ({}) is not (2, 3, 3)".format(position.shape))
+        for row in range(3):
+            for column in range(3):
+                #occupancy = None
+                if position[0, row, column] == 1.0:
+                    print (' X ', end='', flush=True)
+                elif position[1, row, column] == 1.0:
+                    print (' O ', end='', flush=True)
+                else:
+                    print ('   ', end='', flush=True)
+                if column != 2:
+                    print ('|', end='', flush=True)
+                else:
+                    print('') # new line
+            if row != 2:
+                print ('--- --- ---')
