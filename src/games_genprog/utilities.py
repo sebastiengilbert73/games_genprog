@@ -8,4 +8,4 @@ def ArrayToString(array):
 
 def StringTo1DArray(string_repr):
     # Cf. https://stackoverflow.com/questions/30167538/convert-a-numpy-ndarray-to-stringor-bytes-and-convert-it-back-to-numpy-ndarray
-    return np.frombuffer(base64.binascii.a2b_base64(string_repr.encode("ascii")))
+    return np.frombuffer(base64.binascii.a2b_base64(string_repr.encode("ascii"))).copy()  # To have a writable array
