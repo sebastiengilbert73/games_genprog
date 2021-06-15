@@ -55,14 +55,12 @@ class PlayersPopulation(gpevo.Population):
                     individual_to_sum[player1] -= 1
         individual_to_average = {individual: individual_to_sum[individual] / (2 * (len(self._individualsList) - 1))
                                  for individual in self._individualsList}
-        return individual_to_average
+        individual_to_cost = { individual: (1 - individual_to_average[individual])/2
+                               for individual in self._individualsList}
+        return individual_to_cost
 
     def WinnerOf(self, player1, player2, interpreter, position_type):
         positions_list, winner = self.Game(player1, player2, interpreter, position_type)
-        if winner == 'player1':
-            return player1
-        elif winner == 'player2':
-            return player2
         return winner
 
     def Game(self, player1, player2, interpreter, position_type):
@@ -104,7 +102,6 @@ class PlayersPopulation(gpevo.Population):
                 evaluation = interpreter.Evaluate(player, {'position': position_type},
                                                   {'position': candidate_position}, 'float')
             candidatePositionEvaluation_list.append((candidate_position, evaluation))
-            print ("gamesgp.ChooseNextPosition(): evaluation = {}".format(evaluation))
 
         highest_evaluation = -sys.float_info.max
         best_positions = []
@@ -124,4 +121,51 @@ class PlayersPopulation(gpevo.Population):
         return chosen_position, corresponding_winner
 
 
+    def GameAgainstARandomPlayer(self, player, interpreter, position_type, random_player_starts=False):
+        positions_list = []
+        position = self.StartingPosition()
+        winner = None
+        if random_player_starts:
+            current_player = None
+        else:
+            current_player = player
+        while winner is None:
+            if current_player is None:  # Random player
+                if not random_player_starts:
+                    position = self.SwapPosition(position)
+                legalPositionWinner_list = self.LegalPositionsAndWinnerAfterMove(position)
+                we_found_a_winning_move = False
+                for candidate_position, candidate_winner in legalPositionWinner_list:
+                    if candidate_winner == 'player1':
+                        position = candidate_position
+                        winner = candidate_winner
+                        we_found_a_winning_move = True
+                if not we_found_a_winning_move:
+                    position, winner = random.choice(legalPositionWinner_list)
+                if not random_player_starts:
+                    position = self.SwapPosition(position)
+                    if winner is not None and winner != 'draw':
+                        if winner == 'player1':  # The current player won with this move. It must be swapped.
+                            winner = 'player2'
+                        else:  # The current player lost with this move. It must me swapped.
+                            winner = 'player1'
+            else:  # The player is an individual
+                if random_player_starts:
+                    position = self.SwapPosition(position)
+                position, winner = self.ChooseNextPosition(current_player, position, interpreter, position_type)
+
+                if random_player_starts:
+                    position = self.SwapPosition(position)
+                    if winner is not None and winner != 'draw':
+                        if winner == 'player1':  # The current player won with this move. It must be swapped.
+                            winner = 'player2'
+                        else: # The current player lost with this move. It must me swapped.
+                            winner = 'player1'
+
+            if current_player == player:
+                current_player = None
+            else:
+                current_player = player
+            positions_list.append(position)
+        return positions_list, winner
 
