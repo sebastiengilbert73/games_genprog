@@ -169,3 +169,29 @@ class PlayersPopulation(gpevo.Population):
             positions_list.append(position)
         return positions_list, winner
 
+    def PlayMultipleGamesAgainstARandomPlayer(self, player, interpreter, position_type, number_of_games):
+        number_of_player_wins = 0
+        number_of_player_losses = 0
+        number_of_draws = 0
+        for gameNdx in range(number_of_games):
+            if gameNdx %2 == 0:  # player starts
+                positions_list, winner = self.GameAgainstARandomPlayer(player, interpreter, position_type, random_player_starts=False)
+                if winner == 'player1':
+                    number_of_player_wins += 1
+                elif winner == 'player2':
+                    number_of_player_losses += 1
+                elif winner == 'draw':
+                    number_of_draws += 1
+                else:
+                    raise NotImplementedError("PlayersPopulation.PlayMultipleGamesAgainstARandomPlayer(): winner = {}".format(winner))
+            else:  # Random player starts
+                positions_list, winner = self.GameAgainstARandomPlayer(player, interpreter, position_type, random_player_starts=True)
+                if winner == 'player2':
+                    number_of_player_wins += 1
+                elif winner == 'player1':
+                    number_of_player_losses += 1
+                elif winner == 'draw':
+                    number_of_draws += 1
+                else:
+                    raise NotImplementedError("PlayersPopulation.PlayMultipleGamesAgainstARandomPlayer(): winner = {}".format(winner))
+        return (number_of_player_wins, number_of_draws, number_of_player_losses)

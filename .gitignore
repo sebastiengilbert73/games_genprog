@@ -1,1 +1,3 @@
 ./tests/outputs/
+**/__pycache__/*
+src/games_genprog/__pycache__/
