@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<tictactoe>
+	<function>
+		<name>linear8_1</name>
+		<parameter_types>[vector8]</parameter_types>
+		<return_type>float</return_type>
+	</function>
+	<function>
+		<name>concat4_8</name>
+		<parameter_types>[vector4, vector4]</parameter_types>
+		<return_type>vector8</return_type>
+	</function>
+	<function>
+		<name>concat2_4</name>
+		<parameter_types>[vector2, vector2]</parameter_types>
+		<return_type>vector4</return_type>
+	</function>
+	<function>
+		<name>concat1_2</name>
+		<parameter_types>[vector1, vector1]</parameter_types>
+		<return_type>vector2</return_type>
+	</function>
+	<function>
+		<name>relu1</name>
+		<parameter_types>[vector1]</parameter_types>
+		<return_type>vector1</return_type>
+	</function>
+	<function>
+		<name>conv1x2x2_1_1x1</name>
+		<parameter_types>[tensor1x2x2, tensor1x1x2x2, vector1]</parameter_types>
+		<return_type>vector1</return_type>
+	</function>
+	<function>
+		<name>relu1x2x2</name>
+		<parameter_types>[tensor1x2x2]</parameter_types>
+		<return_type>tensor1x2x2</return_type>
+	</function>
+	<function>
+		<name>conv2x3x3_1_2x2</name>
+		<parameter_types>[tensor2x3x3, tensor1x2x2x2, vector1]</parameter_types>
+		<return_type>tensor1x2x2</return_type>
+	</function>
+</tictactoe>

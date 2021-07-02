@@ -6,14 +6,29 @@
 		<return_type>tensor64x2x2</return_type>
 	</function>
 	<function>
+		<name>conv2x3x3_8_2x2</name>
+		<parameter_types>[tensor2x3x3, tensor8x2x2x2, vector8]</parameter_types>
+		<return_type>tensor8x2x2</return_type>
+	</function>
+	<function>
 		<name>maxpool64x2x2</name>
 		<parameter_types>[tensor64x2x2]</parameter_types>
 		<return_type>vector64</return_type>
 	</function>
 	<function>
+		<name>maxpool8x2x2</name>
+		<parameter_types>[tensor8x2x2]</parameter_types>
+		<return_type>vector8</return_type>
+	</function>
+	<function>
 		<name>relu64x2x2</name>
 		<parameter_types>[tensor64x2x2]</parameter_types>
 		<return_type>tensor64x2x2</return_type>
+	</function>
+	<function>
+		<name>relu8x2x2</name>
+		<parameter_types>[tensor8x2x2]</parameter_types>
+		<return_type>tensor8x2x2</return_type>
 	</function>
 	<function>
 		<name>linear64_8</name>
@@ -24,6 +39,11 @@
 		<name>linear8_1</name>
 		<parameter_types>[vector8, vector8, float]</parameter_types>
 		<return_type>float</return_type>
+	</function>
+	<function>
+		<name>relu64</name>
+		<parameter_types>[vector64]</parameter_types>
+		<return_type>vector64</return_type>
 	</function>
 	<function>
 		<name>relu8</name>
@@ -44,5 +64,70 @@
 		<name>tunnel64x2x2x2</name>
 		<parameter_types>[tensor64x2x2x2]</parameter_types>
 		<return_type>tensor64x2x2x2</return_type>
+	</function>
+	<function>
+		<name>tunnel8x2x2x2</name>
+		<parameter_types>[tensor8x2x2x2]</parameter_types>
+		<return_type>tensor8x2x2x2</return_type>
+	</function>
+	<function>
+		<name>average64x2x2x2</name>
+		<parameter_types>[tensor64x2x2x2, tensor64x2x2x2]</parameter_types>
+		<return_type>tensor64x2x2x2</return_type>
+	</function>
+	<function>
+		<name>average64</name>
+		<parameter_types>[vector64, vector64]</parameter_types>
+		<return_type>vector64</return_type>
+	</function>
+	<function>
+		<name>average8</name>
+		<parameter_types>[vector8, vector8]</parameter_types>
+		<return_type>vector8</return_type>
+	</function>
+	<function>
+		<name>max64</name>
+		<parameter_types>[vector64, vector64]</parameter_types>
+		<return_type>vector64</return_type>
+	</function>
+	<function>
+		<name>min64</name>
+		<parameter_types>[vector64, vector64]</parameter_types>
+		<return_type>vector64</return_type>
+	</function>
+	<function>
+		<name>max8</name>
+		<parameter_types>[vector8, vector8]</parameter_types>
+		<return_type>vector8</return_type>
+	</function>
+	<function>
+		<name>min8</name>
+		<parameter_types>[vector8, vector8]</parameter_types>
+		<return_type>vector8</return_type>
+	</function>
+	<function>
+		<name>average64x2x2</name>
+		<parameter_types>[tensor64x2x2, tensor64x2x2]</parameter_types>
+		<return_type>tensor64x2x2</return_type>
+	</function>
+	<function>
+		<name>conv64x2x2_vector64</name>
+		<parameter_types>[tensor64x2x2, tensor64x64x2x2, vector64]</parameter_types>
+		<return_type>vector64</return_type>
+	</function>
+	<function>
+		<name>conv8x2x2_vector8</name>
+		<parameter_types>[tensor8x2x2, tensor8x8x2x2, vector8]</parameter_types>
+		<return_type>vector8</return_type>
+	</function>
+	<function>
+		<name>tunnel64x64x2x2</name>
+		<parameter_types>[tensor64x64x2x2]</parameter_types>
+		<return_type>tensor64x64x2x2</return_type>
+	</function>
+	<function>
+		<name>tunnel8x8x2x2</name>
+		<parameter_types>[tensor8x8x2x2]</parameter_types>
+		<return_type>tensor8x8x2x2</return_type>
 	</function>
 </tictactoe>
