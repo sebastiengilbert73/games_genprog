@@ -37,7 +37,7 @@
 	</function>
 	<function>
 		<name>linear8_1</name>
-		<parameter_types>[vector8, vector8, float]</parameter_types>
+		<parameter_types>[vector8, vector8, vector1]</parameter_types>
 		<return_type>float</return_type>
 	</function>
 	<function>

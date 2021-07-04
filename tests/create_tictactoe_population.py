@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)-15s %(levelname)s %(
 
 def main():
     logging.info("create_tictactoe_population.py main()")
-    tree_filepath = '../src/games_genprog/games/tictactoe.xml'
+    tree_filepath = '../src/games_genprog/games/tictactoe_atomicKernels.xml'
     domainFunctionsTree: ET.ElementTree = ET.parse(tree_filepath)
     interpreter: tictactoe.Interpreter = tictactoe.Interpreter(domainFunctionsTree)
 
@@ -28,11 +28,11 @@ def main():
     print("winner = {}".format(winner))
     """
     numberOfIndividuals = 50
-    levelToFunctionProbabilityDict = {0: 1, 1: 1, 2: 1, 3: 1, 4: 0.5, 5: 0.5, 6: 0.5}
+    levelToFunctionProbabilityDict = {0: 1, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 0.5, 8: 0.5, 9: 0.5}
     proportionOfConstants = 0.5
     constantCreationParametersList = [-1, 1]
     variableNameToTypeDict = {'position': 'tensor2x3x3'}
-    numberOfTournamentParticipants = 4
+    numberOfTournamentParticipants = 2
     mutationProbability = 0.4
     proportionOfNewIndividuals = 0.1
     weightForNumberOfElements = 0.0001

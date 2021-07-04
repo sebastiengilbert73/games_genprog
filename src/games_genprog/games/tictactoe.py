@@ -14,7 +14,9 @@ import games_genprog.gamesgp as gamesgp
 
 possibleTypes = ['float', 'vector18', 'tensor2x3x3', 'tensor64x2x2', 'vector64', 'tensor64x2x2x2',
                  'tensor8x64', 'vector8', 'tensor64x64x2x2', 'tensor8x2x2x2', 'tensor8x2x2',
-                 'tensor8x8x2x2']
+                 'tensor8x8x2x2',
+                 'vector4', 'vector2', 'vector1', 'tensor1x2x2', 'tensor2x3x3', 'tensor1x1x2x2',
+                 'tensor1x2x2x2']
 class Interpreter(gp.Interpreter):
     def FunctionDefinition(self, functionName: str, argumentsList: List[Any]) -> Any:
 
@@ -101,13 +103,13 @@ class Interpreter(gp.Interpreter):
                 raise ValueError(
                     "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[1].shape = {} != (8,)".format(
                         functionName, argumentsList[1].shape))
-            if type(argumentsList[2]) is not float:
+            if argumentsList[2].shape != (1,):
                 raise ValueError(
-                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[2] = {} is not float".format(
-                        functionName, argumentsList[2]))
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[2].shape = {} != (1,)".format(
+                        functionName, argumentsList[1].shape))
             return torch.nn.functional.linear(torch.from_numpy(argumentsList[0]),
                                               torch.from_numpy(argumentsList[1]).unsqueeze(0),
-                                              torch.tensor([argumentsList[2]])).item()  # Must return a float
+                                              torch.from_numpy(argumentsList[2])).item()  # Must return a float
         elif functionName == 'relu64':
             if argumentsList[0].shape != (64,):
                 raise ValueError(
@@ -271,6 +273,172 @@ class Interpreter(gp.Interpreter):
                         functionName, argumentsList[0].shape))
             return argumentsList[0]
 
+        elif functionName == 'concat4_8':
+            if argumentsList[0].shape != (4,):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[0].shape = {} != (4,)".format(
+                        functionName, argumentsList[0].shape))
+            if argumentsList[1].shape != (4,):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[1].shape = {} != (4,)".format(
+                        functionName, argumentsList[1].shape))
+            return np.concatenate((argumentsList[0], argumentsList[1]))
+        elif functionName == 'concat2_4':
+            if argumentsList[0].shape != (2,):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[0].shape = {} != (2,)".format(
+                        functionName, argumentsList[0].shape))
+            if argumentsList[1].shape != (2,):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[1].shape = {} != (2,)".format(
+                        functionName, argumentsList[1].shape))
+            return np.concatenate((argumentsList[0], argumentsList[1]))
+        elif functionName == 'concat1_2':
+            if argumentsList[0].shape != (1,):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[0].shape = {} != (1,)".format(
+                        functionName, argumentsList[0].shape))
+            if argumentsList[1].shape != (1,):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[1].shape = {} != (1,)".format(
+                        functionName, argumentsList[1].shape))
+            return np.concatenate((argumentsList[0], argumentsList[1]))
+        elif functionName == 'relu1':
+            if argumentsList[0].shape != (1,):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[0].shape = {} != (1,)".format(
+                        functionName, argumentsList[0].shape))
+            return torch.nn.functional.relu(torch.from_numpy(argumentsList[0])).numpy()
+        elif functionName == 'conv1x2x2_1_2x2':
+            if argumentsList[0].shape != (1, 2, 2):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[0].shape = {} != (1, 2, 2)".format(
+                        functionName, argumentsList[0].shape))
+            if argumentsList[1].shape != (1, 1, 2, 2):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[1].shape = {} != (1, 1, 2, 2)".format(
+                        functionName, argumentsList[1].shape))
+            if argumentsList[2].shape != (1,):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[2].shape = {} != (1,)".format(
+                        functionName, argumentsList[2].shape))
+            # .squeeze() will get rid of all dimensions...
+            single_value = torch.nn.functional.conv2d(input=torch.from_numpy(argumentsList[0]).unsqueeze(0),
+                                              weight=torch.from_numpy(argumentsList[1]),
+                                              bias=torch.from_numpy(argumentsList[2])).squeeze().numpy().item()
+            return np.array([single_value])
+        elif functionName == 'relu1x2x2':
+            if argumentsList[0].shape != (1, 2, 2):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[0].shape = {} != (1, 2, 2)".format(
+                        functionName, argumentsList[0].shape))
+            return torch.nn.functional.relu(torch.from_numpy(argumentsList[0])).numpy()
+        elif functionName == 'conv2x3x3_1_2x2':
+            if argumentsList[0].shape != (2, 3, 3):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[0].shape = {} != (2, 3, 3)".format(
+                        functionName, argumentsList[0].shape))
+            if argumentsList[1].shape != (1, 2, 2, 2):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[1].shape = {} != (1, 2, 2, 2)".format(
+                        functionName, argumentsList[1].shape))
+            if argumentsList[2].shape != (1,):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[2].shape = {} != (1,)".format(
+                        functionName, argumentsList[2].shape))
+            a = torch.nn.functional.conv2d(input=torch.from_numpy(argumentsList[0]).unsqueeze(0),
+                                              weight=torch.from_numpy(argumentsList[1]),
+                                              bias=torch.from_numpy(argumentsList[2])).squeeze().numpy()
+            return np.expand_dims(a, axis=0)
+        elif functionName == 'tunnel1x1x2x2':
+            if argumentsList[0].shape != (1, 1, 2, 2):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[0].shape = {} != (1, 1, 2, 2)".format(
+                        functionName, argumentsList[0].shape))
+            return argumentsList[0]
+        elif functionName == 'tunnel1x2x2x2':
+            if argumentsList[0].shape != (1, 2, 2, 2):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[0].shape = {} != (1, 2, 2, 2)".format(
+                        functionName, argumentsList[0].shape))
+            return argumentsList[0]
+        elif functionName == 'vector1_to_float':
+            if argumentsList[0].shape != (1,):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[0].shape = {} != (1,)".format(
+                        functionName, argumentsList[0].shape))
+            return argumentsList[0][0]
+        elif functionName == 'average4':
+            if argumentsList[0].shape != (4,):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[0].shape = {} != (4,)".format(
+                        functionName, argumentsList[0].shape))
+            if argumentsList[1].shape != (4,):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[1].shape = {} != (4,)".format(
+                        functionName, argumentsList[1].shape))
+            return (argumentsList[0] + argumentsList[1])/2
+        elif functionName == 'average2':
+            if argumentsList[0].shape != (2,):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[0].shape = {} != (2,)".format(
+                        functionName, argumentsList[0].shape))
+            if argumentsList[1].shape != (2,):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[1].shape = {} != (2,)".format(
+                        functionName, argumentsList[1].shape))
+            return (argumentsList[0] + argumentsList[1])/2
+        elif functionName == 'average1':
+            if argumentsList[0].shape != (1,):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[0].shape = {} != (1,)".format(
+                        functionName, argumentsList[0].shape))
+            if argumentsList[1].shape != (1,):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[1].shape = {} != (1,)".format(
+                        functionName, argumentsList[1].shape))
+            return (argumentsList[0] + argumentsList[1])/2
+        elif functionName == 'average1x2x2x2':
+            if argumentsList[0].shape != (1, 2, 2, 2):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[0].shape = {} != (1, 2, 2, 2)".format(
+                        functionName, argumentsList[0].shape))
+            if argumentsList[1].shape != (1, 2, 2, 2):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[1].shape = {} != (1, 2, 2, 2)".format(
+                        functionName, argumentsList[1].shape))
+            return (argumentsList[0] + argumentsList[1])/2
+        elif functionName == 'average1x1x2x2':
+            if argumentsList[0].shape != (1, 1, 2, 2):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[0].shape = {} != (1, 1, 2, 2)".format(
+                        functionName, argumentsList[0].shape))
+            if argumentsList[1].shape != (1, 1, 2, 2):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[1].shape = {} != (1, 1, 2, 2)".format(
+                        functionName, argumentsList[1].shape))
+            return (argumentsList[0] + argumentsList[1])/2
+        elif functionName == 'average1x2x2':
+            if argumentsList[0].shape != (1, 2, 2):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[0].shape = {} != (1, 2, 2)".format(
+                        functionName, argumentsList[0].shape))
+            if argumentsList[1].shape != (1, 2, 2):
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[1].shape = {} != (1, 2, 2)".format(
+                        functionName, argumentsList[1].shape))
+            return (argumentsList[0] + argumentsList[1])/2
+        elif functionName == 'averagefloat':
+            if type(argumentsList[0]) is not float:
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[0] = {} is not a float".format(
+                        functionName, argumentsList[0]))
+            if type(argumentsList[1]) is not float:
+                raise ValueError(
+                    "tictactoe.Interpreter.FunctionDefinition(): functionName = {}; argumentsList[1] = {} is not a float".format(
+                        functionName, argumentsList[1]))
+            return (argumentsList[0] + argumentsList[1])/2
+
         else:
             raise NotImplementedError("tictactoe.Interpreter.FunctionDefinition(): Not implemented function '{}'".format(functionName))
 
@@ -304,6 +472,13 @@ class Interpreter(gp.Interpreter):
                 return np.reshape(array1D, (8, 2, 2))
             elif type == 'tensor8x8x2x2':
                 return np.reshape(array1D, (8, 8, 2, 2))
+            elif type == 'tensor1x2x2':
+                return np.reshape(array1D, (1, 2, 2))
+            elif type == 'tensor1x2x2x2':
+                return np.reshape(array1D, (1, 2, 2, 2))
+            elif type == 'tensor1x1x2x2':
+                return np.reshape(array1D, (1, 1, 2, 2))
+
             else:
                 raise NotImplementedError("tictactoe.Interpreter.TypeConverter(): Not implemented type '{}'".format(type))
 
@@ -385,6 +560,36 @@ class Interpreter(gp.Interpreter):
                         returnType, len(parametersList)))
             random_arr = np.random.uniform(parametersList[0], parametersList[1], (8, 8, 2, 2))
             return games_genprog.utilities.ArrayToString(random_arr)
+        elif returnType == 'vector1':
+            if len(parametersList) != 2:
+                raise ValueError("tictactoe.Interpreter.CreateConstant(): returnType = {}; len(parametersList) = {} != 2".format(returnType, len(parametersList)))
+            random_vector = np.random.uniform(parametersList[0], parametersList[1], (1,))
+            return games_genprog.utilities.ArrayToString(random_vector)
+        elif returnType == 'vector2':
+            if len(parametersList) != 2:
+                raise ValueError("tictactoe.Interpreter.CreateConstant(): returnType = {}; len(parametersList) = {} != 2".format(returnType, len(parametersList)))
+            random_vector = np.random.uniform(parametersList[0], parametersList[1], (2,))
+            return games_genprog.utilities.ArrayToString(random_vector)
+        elif returnType == 'vector4':
+            if len(parametersList) != 2:
+                raise ValueError("tictactoe.Interpreter.CreateConstant(): returnType = {}; len(parametersList) = {} != 2".format(returnType, len(parametersList)))
+            random_vector = np.random.uniform(parametersList[0], parametersList[1], (4,))
+            return games_genprog.utilities.ArrayToString(random_vector)
+        elif returnType == 'tensor1x2x2':
+            if len(parametersList) != 2:
+                raise ValueError("tictactoe.Interpreter.CreateConstant(): returnType = {}; len(parametersList) = {} != 2".format(returnType, len(parametersList)))
+            random_vector = np.random.uniform(parametersList[0], parametersList[1], (1, 2, 2))
+            return games_genprog.utilities.ArrayToString(random_vector)
+        elif returnType == 'tensor1x1x2x2':
+            if len(parametersList) != 2:
+                raise ValueError("tictactoe.Interpreter.CreateConstant(): returnType = {}; len(parametersList) = {} != 2".format(returnType, len(parametersList)))
+            random_vector = np.random.uniform(parametersList[0], parametersList[1], (1, 1, 2, 2))
+            return games_genprog.utilities.ArrayToString(random_vector)
+        elif returnType == 'tensor1x2x2x2':
+            if len(parametersList) != 2:
+                raise ValueError("tictactoe.Interpreter.CreateConstant(): returnType = {}; len(parametersList) = {} != 2".format(returnType, len(parametersList)))
+            random_vector = np.random.uniform(parametersList[0], parametersList[1], (1, 2, 2, 2))
+            return games_genprog.utilities.ArrayToString(random_vector)
         else:
             raise NotImplementedError("tictactoe.Interpreter.CreateConstant(): Not implemented return type {}".format(returnType))
 

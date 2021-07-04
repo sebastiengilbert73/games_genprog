@@ -2,7 +2,7 @@
 <tictactoe>
 	<function>
 		<name>linear8_1</name>
-		<parameter_types>[vector8]</parameter_types>
+		<parameter_types>[vector8, vector8, vector1]</parameter_types>
 		<return_type>float</return_type>
 	</function>
 	<function>
@@ -26,7 +26,7 @@
 		<return_type>vector1</return_type>
 	</function>
 	<function>
-		<name>conv1x2x2_1_1x1</name>
+		<name>conv1x2x2_1_2x2</name>
 		<parameter_types>[tensor1x2x2, tensor1x1x2x2, vector1]</parameter_types>
 		<return_type>vector1</return_type>
 	</function>
@@ -39,5 +39,60 @@
 		<name>conv2x3x3_1_2x2</name>
 		<parameter_types>[tensor2x3x3, tensor1x2x2x2, vector1]</parameter_types>
 		<return_type>tensor1x2x2</return_type>
+	</function>
+	<function>
+		<name>tunnel2x3x3</name>
+		<parameter_types>[tensor2x3x3]</parameter_types>
+		<return_type>tensor2x3x3</return_type>
+	</function>
+	<function>
+		<name>tunnel1x1x2x2</name>
+		<parameter_types>[tensor1x1x2x2]</parameter_types>
+		<return_type>tensor1x1x2x2</return_type>
+	</function>
+	<function>
+		<name>tunnel1x2x2x2</name>
+		<parameter_types>[tensor1x2x2x2]</parameter_types>
+		<return_type>tensor1x2x2x2</return_type>
+	</function>
+	<function>
+		<name>average8</name>
+		<parameter_types>[vector8, vector8]</parameter_types>
+		<return_type>vector8</return_type>
+	</function>
+	<function>
+		<name>average4</name>
+		<parameter_types>[vector4, vector4]</parameter_types>
+		<return_type>vector4</return_type>
+	</function>
+	<function>
+		<name>average2</name>
+		<parameter_types>[vector2, vector2]</parameter_types>
+		<return_type>vector2</return_type>
+	</function>
+	<function>
+		<name>average1</name>
+		<parameter_types>[vector1, vector1]</parameter_types>
+		<return_type>vector1</return_type>
+	</function>
+	<function>
+		<name>average1x2x2x2</name>
+		<parameter_types>[tensor1x2x2x2, tensor1x2x2x2]</parameter_types>
+		<return_type>tensor1x2x2x2</return_type>
+	</function>
+	<function>
+		<name>average1x1x2x2</name>
+		<parameter_types>[tensor1x1x2x2, tensor1x1x2x2]</parameter_types>
+		<return_type>tensor1x1x2x2</return_type>
+	</function>
+	<function>
+		<name>average1x2x2</name>
+		<parameter_types>[tensor1x2x2, tensor1x2x2]</parameter_types>
+		<return_type>tensor1x2x2</return_type>
+	</function>
+	<function>
+		<name>averagefloat</name>
+		<parameter_types>[float, float]</parameter_types>
+		<return_type>float</return_type>
 	</function>
 </tictactoe>
